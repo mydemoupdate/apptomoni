@@ -7,7 +7,7 @@ import bootstrapPlugin from "@fullcalendar/bootstrap";
 import listPlugin from "@fullcalendar/list";
 import { required } from "vuelidate/lib/validators";
 
-import Layout from "../../layouts/main";
+import Layout from "../../../app/admin/layout/main";
 import PageHeader from "@/components/page-header";
 import appConfig from "@/app.config";
 
@@ -214,7 +214,7 @@ export default {
                 >{{ option.name }}</option>
               </select>
               <div
-                v-if="submitted && 
+                v-if="submitted &&
                 !$v.event.category.required"
                 class="invalid-feedback"
               >This value is required.</div>

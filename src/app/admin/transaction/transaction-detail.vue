@@ -1,6 +1,6 @@
 
 <script>
-    import Layout from "../../layouts/main";
+    import Layout from "../layout/main";
     import PageHeader from "@/components/page-header";
     import appConfig from "@/app.config";
     import factory from "@/services/factory";

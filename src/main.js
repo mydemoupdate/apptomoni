@@ -6,13 +6,12 @@ import * as VueGoogleMaps from 'vue2-google-maps'
 import VueMask from 'v-mask'
 import VueRouter from 'vue-router'
 import vco from "v-click-outside"
-import router from './router/index'
+// import routerTemplate from './router/index'
 import moment from 'moment'
 import "@/design/index.scss";
 import VueSweetalert2 from 'vue-sweetalert2';
 import store from '@/state/store'
 
-import routerApp from './app/index'
 
 import App from './App.vue'
 
@@ -57,10 +56,12 @@ Vue.filter('formatDate', function(value) {
 
 Vue.component('apexchart', VueApexCharts)
 
+import routerApp from './app/index'
 new Vue({
-  router,
-  routerApp,
   store,
-
   render: h => h(App),
+  router:routerApp,
+  // router:routerTemplate,
+
+
 }).$mount('#app')

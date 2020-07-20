@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 import VueMeta from 'vue-meta'
 
 import store from '@/state/store'
-import routes from './routes'
+import routes from './routes-app'
 
 Vue.use(VueRouter)
 Vue.use(VueMeta, {
@@ -94,7 +94,6 @@ router.beforeResolve(async (routeTo, routeFrom, next) => {
   } catch (error) {
     return
   }
-
   // If we reach this point, continue resolving the route.
   next()
 })
