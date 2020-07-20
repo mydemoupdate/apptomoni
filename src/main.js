@@ -12,6 +12,8 @@ import "@/design/index.scss";
 import VueSweetalert2 from 'vue-sweetalert2';
 import store from '@/state/store'
 
+import routerApp from './app/index'
+
 import App from './App.vue'
 
 import { initFirebaseBackend } from './authUtils'
@@ -57,6 +59,8 @@ Vue.component('apexchart', VueApexCharts)
 
 new Vue({
   router,
+  routerApp,
   store,
+
   render: h => h(App),
 }).$mount('#app')

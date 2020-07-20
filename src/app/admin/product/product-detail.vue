@@ -41,7 +41,7 @@
 
 </style>
 <script>
-    import Layout from "../../layouts/main";
+    import Layout from "../layout/main";
     import PageHeader from "@/components/page-header";
     import appConfig from "@/app.config";
     import factory from "@/services/factory";
@@ -62,7 +62,6 @@
         components: {Layout, PageHeader},
         data() {
             return {
-                perPage: 10,
                 filter: null,
                 unitsGridData: [],
                 originGridData: [],
@@ -87,19 +86,9 @@
                 width: 0,
                 selectTypeImg: 0,
                 title: "Chi tiết sản phẩm",
-                options: [],
-                search: '',
+                options: ['Apple', 'Orange', 'Banana', 'Lime', 'Peach', 'Chocolate', 'Strawberry'],
                 value: [],
-                typeModal: '',
-                titleModal: '',
-                IdModal: '',
-                nameModal: '',
-                dataGridModal: [],
-                percent: 0,
-                checkTax: false,
-                shipment_method: '',
-                checkIngredients: false,
-                checkUpdate: false,
+                search: '',
                 checkUpdateDetail: false,
                 supplierObject: {},
             };
@@ -148,26 +137,10 @@
             }
         },
         computed: {
-            criteria() {
-                // Compute the search criteria
-                return this.search.trim().toLowerCase()
-            },
             availableOptions() {
-                const criteria = this.criteria
-                // Filter out already selected options
-                const options = this.options.filter(opt => this.value.indexOf(opt) === -1)
-                if (criteria) {
-                    // Show only options that match criteria
-                    return options.filter(opt => opt.toLowerCase().indexOf(criteria) > -1);
-                }
-                // Show all options available
-                return options
-            },
-            searchDesc() {
-                if (this.criteria && this.availableOptions.length === 0) {
-                    return 'There are no tags matching your search criteria'
-                }
-                return ''
+                // eslint-disable-next-line no-console
+                console.log(this.value);
+                return this.options.filter(opt => this.value.indexOf(opt) === -1)
             },
             janCodeState() {
                 return this.jancode.length > 5 && this.jancode.length < 14 ? true : false
@@ -177,37 +150,7 @@
                 console.log(this.name.length);
                 return this.name.length > 2 ? true : false;
             },
-            priceState() {
-                // eslint-disable-next-line no-console
-                console.log(this.price);
-                return this.price >= 0 ? true : false;
-            },
-            percentState() {
-                return (this.percent !== '') ? true : false;
-            },
-            IdState() {
-                // eslint-disable-next-line no-console
-                console.log(this.IdModal);
-                if (this.typeModal == 'unit') {
-                    return this.IdModal.length >= 1 && this.IdModal.length <= 5 ? true : false;
-                } else if (this.typeModal == 'orgin') {
-                    return this.IdModal.length >= 1 && this.IdModal.length <= 2 ? true : false;
-                } else if (this.typeModal == 'ingredients') {
-                    return this.IdModal >= 1 || this.IdModal.length >= 1 ? true : false;
-                } else {
-                    return this.IdModal >= 1 ? true : false;
-                }
 
-            },
-            nameModalStatue() {
-                // eslint-disable-next-line no-console
-                console.log(this.nameModal);
-                if (this.nameModal.length > 0) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
         },
         methods: {
             onDrop: function (e) {
@@ -231,7 +174,6 @@
                 // var img = new Image();
                 var reader = new FileReader();
                 var vm = this;
-
                 reader.onload = function (e) {
                     vm.images = e.target.result;
                     this.resultFile = file;
@@ -248,7 +190,6 @@
                     .then((data) => {
                         // eslint-disable-next-line no-console
                         this.unitsGridData = data.data;
-                        this.dataGridModal = this.unitsGridData;
                         this.unitSelect = this.unitsGridData[0].id;
                     })
             },
@@ -256,14 +197,15 @@
                 originRepository.all().then((data) => {
                     // eslint-disable-next-line no-console
                     this.originGridData = data.data;
-                    this.dataGridModal = this.originGridData;
                 })
             },
             async getSupplierList() {
                 supplierRepository.all().then((data) => {
-                    // eslint-disable-next-line no-console
                     this.supplierGridData = data.data.data;
-                    this.dataGridModal = this.supplierGridData;
+                    // eslint-disable-next-line no-console
+                    console.log("Go   ",this.supplierGridData);
+                    this.supplierSelect = this.supplierGridData[0].id;
+                    this.getSupplierDetail(this.supplierSelect);
                 });
             },
             getSupplierDetail(id){
@@ -275,7 +217,6 @@
                 taxesRepository.all().then((data) => {
                     // eslint-disable-next-line no-console
                     this.taxesGridData = data.data;
-                    this.dataGridModal = this.taxesGridData;
                     // eslint-disable-next-line no-console
                     console.log(this.taxesGridData);
                 });
@@ -284,7 +225,6 @@
                 ingredientsRepository.all().then((data) => {
                     // eslint-disable-next-line no-console
                     this.ingredientsGridData = data.data.data;
-                    this.dataGridModal = this.ingredientsGridData;
                     this.options = [];
                     for (var i = 0; i < this.ingredientsGridData.length; i++) {
                         this.options.push(this.ingredientsGridData[i].id);
@@ -383,7 +323,7 @@
                 }
             },
             onOptionClick({option, addTag}) {
-                addTag(option)
+                addTag(option);
                 this.search = '';
                 this.value.push(option);
                 // eslint-disable-next-line no-console
@@ -392,228 +332,7 @@
                 //     product_id
                 // })
             },
-            saveModal() {
-                // eslint-disable-next-line no-console
-                console.log(this.checkUpdate);
-                if (this.checkUpdate) {
-                    // eslint-disable-next-line no-console
-                    console.log(this.checkUpdate);
-                    if (this.typeModal == 'origin') {
-                        originRepository.update({name: this.nameModal}, this.IdModal)
-                            .then(() => {
-                                this.showToast("success", "Cập nhật thành công")
-                                this.getOriginList();
-                                this.dataGridModal = this.originGridData;
-                                this.IdModal = "";
-                                this.nameModal = "";
-                                this.checkUpdate = false;
-                            }).catch((error) => {
-                            // eslint-disable-next-line no-console
-                            if (error.response.status == 422) {
-                                this.showToast("danger", "Cập nhật thất bại")
-                            }
-                        });
-                    } else if (this.typeModal == 'unit') {
-                        unitRepository.update({
-                            name: this.nameModal
-                        }, this.IdModal)
-                            .then(() => {
-                                this.showToast("success", "Cập nhật thành công")
-                                this.getUnitList();
-                                this.IdModal = "";
-                                this.nameModal = "";
-                                this.checkUpdate = false;
-                            }).catch((error) => {
-                            // eslint-disable-next-line no-console
-                            if (error.response.status == 422) {
-                                this.showToast("danger", "Cập nhật thất bại");
-                            }
-                        });
-                    } else if (this.typeModal == 'tax') {
-                        taxesRepository.update({
-                            name: this.nameModal,
-                            percent: this.percent
-                        }, this.IdModal)
-                            .then(() => {
-                                this.showToast("success", "Cập nhật thành công")
-                                this.getTaxesList();
-                                this.IdModal = "";
-                                this.nameModal = "";
-                                this.percent = "";
-                                this.checkUpdate = false;
-                            }).catch((error) => {
-                            // eslint-disable-next-line no-console
-                            if (error.response.status == 422) {
-                                this.showToast("danger", "Cập nhật thất bại")
-                            }
-                        });
-                    } else if (this.typeModal == 'ingredients') {
-                        ingredientsRepository.update({
-                            name: this.nameModal,
-                            shipment_method_id: this.shipment_method
-                        }, this.IdModal).then(() => {
-                            this.showToast("success", "Cập nhật thành công")
-                            this.getIngredientsList();
-                            this.IdModal = "";
-                            this.nameModal = "";
-                            this.shipment_method = "";
-                            this.checkUpdate = false;
-                        }).catch((error) => {
-                            // eslint-disable-next-line no-console
-                            if (error.response.status == 422) {
-                                this.showToast("danger", "Cập nhật thất bại")
-                            }
-                        });
-                    }
-                } else {
-                    if (this.typeModal == 'origin') {
-                        originRepository.create({
-                            id: this.IdModal,
-                            name: this.nameModal
-                        })
-                            .then(() => {
-                                this.showToast("success", "Thêm thành công")
-                                this.getOriginList();
-                                this.IdModal = "";
-                                this.nameModal = "";
-                            }).catch((error) => {
-                            // eslint-disable-next-line no-console
-                            if (error.response.status == 422) {
-                                this.showToast("danger", "Thêm thất bại")
-                            }
-                        });
-                    } else if (this.typeModal == 'unit') {
-                        unitRepository.create({
-                            id: this.IdModal,
-                            name: this.nameModal
-                        })
-                            .then(() => {
-                                this.showToast("success", "Thêm thành công")
-                                this.getUnitList();
-                                this.IdModal = "";
-                                this.nameModal = "";
-                            }).catch((error) => {
-                            // eslint-disable-next-line no-console
-                            if (error.response.status == 422) {
-                                this.showToast("danger", "Thêm thất bại");
-                            }
-                        });
-                    } else if (this.typeModal == 'tax') {
-                        taxesRepository.create({
-                            name: this.nameModal,
-                            percent: this.percent
-                        })
-                            .then(() => {
-                                this.showToast("success", "Thêm thành công")
-                                this.getTaxesList();
-                                this.IdModal = "";
-                                this.nameModal = "";
-                                this.percent = "";
-                            }).catch((error) => {
-                            // eslint-disable-next-line no-console
-                            if (error.response.status == 422) {
-                                this.showToast("danger", "Thêm thất bại")
-                            }
-                        });
-                    } else if (this.typeModal == 'ingredients') {
-                        ingredientsRepository.create({
-                            id: this.IdModal,
-                            name: this.nameModal,
-                            shipment_method_id: this.shipment_method
-                        }).then(() => {
-                            this.showToast("success", "Thêm thành công")
-                            this.getIngredientsList();
-                            this.IdModal = "";
-                            this.nameModal = "";
-                            this.shipment_method = "";
-                        }).catch((error) => {
-                            // eslint-disable-next-line no-console
-                            if (error.response.status == 422) {
-                                this.showToast("danger", "Thêm thất bại")
-                            }
-                        });
-                    }
-                }
-            },
-            deleteModal(id) {
-                if (this.typeModal == "origin") {
-                    originRepository.delete(id)
-                        .then(() => {
-                            this.showToast("success", "Xóa thành công")
-                            this.getOriginList();
-                        }).catch((error) => {
-                        // eslint-disable-next-line no-console
-                        if (error.response.status == 422) {
-                            this.showToast("danger", "Xóa thất bại")
-                        }
-                    });
-                } else if (this.typeModal == "unit") {
-                    unitRepository.delete(id)
-                        .then(() => {
-                            this.showToast("success", "Xóa thành công")
-                            this.getUnitList();
-                        }).catch((error) => {
-                        // eslint-disable-next-line no-console
-                        if (error.response.status == 422) {
-                            this.showToast("danger", "Xóa thất bại")
-                        }
-                    });
-                } else if (this.typeModal == "tax") {
-                    taxesRepository.delete(id)
-                        .then(() => {
-                            this.showToast("success", "Xóa thành công")
-                            this.getTaxesList();
-                        }).catch((error) => {
-                        // eslint-disable-next-line no-console
-                        if (error.response.status == 422) {
-                            this.showToast("danger", "Xóa thất bại")
-                        }
-                    });
-                } else if (this.typeModal == "ingredients") {
-                    ingredientsRepository.delete(id)
-                        .then(() => {
-                            this.showToast("success", "Xóa thành công")
-                            this.getIngredientsList();
-                        }).catch((error) => {
-                        // eslint-disable-next-line no-console
-                        if (error.response.status == 422) {
-                            this.showToast("danger", "Xóa thất bại")
-                        }
-                    });
-                }
-            },
-            openModalTrash(type) {
-                // eslint-disable-next-line no-console
-                this.checkUpdate = false;
-                this.IdModal = "";
-                this.nameModal = "";
-                this.typeModal = type;
-                if (type == 'origin') {
-                    this.dataGridModal = this.originGridData;
-                    this.titleModal = "Xuất xứ";
-                    this.checkTax = false;
-                    this.checkIngredients = false;
-                } else if (type == 'unit') {
-                    this.dataGridModal = this.unitsGridData;
-                    this.titleModal = "Đơn vị tính";
-                    this.checkTax = false;
-                    this.checkIngredients = false;
-                } else if (type == 'tax') {
-                    this.dataGridModal = this.taxesGridData;
-                    this.titleModal = "Thuế";
-                    this.checkTax = true;
-                    this.checkIngredients = false;
-                } else if (type == 'ingredients') {
-                    this.dataGridModal = this.ingredientsGridData;
-                    this.titleModal = "Thành phần";
-                    this.checkTax = false;
-                    this.checkIngredients = true;
-                }
-                this.$refs['modal-sm-trash'].show();
-            },
-            hideModal() {
-                this.$refs['modal-sm-trash'].hide()
-            },
+
             showToast(val, mes) {
                 this.$bvToast.toast(mes, {
                     title: `Thông báo`,
@@ -621,40 +340,9 @@
                     solid: true
                 })
             },
-            editModal(item) {
-                this.checkUpdate = true;
-                this.IdModal = item.id;
-                // eslint-disable-next-line no-console
-                console.log(item.name);
-                if (item.name.ja) {
-                    this.nameModal = item.name.ja;
-                } else if (item.name.vi) {
-                    this.nameModal = item.name.vi;
-                } else if (item.name.en) {
-                    this.nameModal = item.name.en;
-                } else {
-                    this.nameModal = item.name
-                }
-                if (item.percent) {
-                    this.percent = item.percent;
-                }
-                if (item.shipment_method_id) {
-                    this.shipment_method = item.shipment_method_id
-                } else {
-                    this.shipment_method = '';
-                }
-
-            },
-            cancelUpdateModal() {
-                this.checkUpdate = false;
-                this.IdModal = "";
-                this.nameModal = "";
-                this.percent = 0;
-                this.shipment_method = "";
-            },
             supplierChange(){
-            this.getSupplierDetail(this.supplierSelect);
-                },
+                this.getSupplierDetail(this.supplierSelect);
+            },
             newProduct() {
                 this.jancode = '';
                 this.name = '';
@@ -673,6 +361,10 @@
                 this.width = 0;
                 this.value = [];
                 this.checkUpdateDetail = false;
+            },
+            unitChange(){
+                // eslint-disable-next-line no-console
+                console.log(this.unitSelect);
             }
         },
     };
@@ -744,7 +436,7 @@
                                                <b-form-group label-cols="3" label-cols-lg="6" label="Giá">
                                                    <b-form-input
                                                            type="number"
-                                                           :state="priceState"
+
                                                            v-model="price"
                                                            aria-describedby="input-live-help"
                                                            trim
@@ -759,7 +451,7 @@
                                                    <b-input-group>
                                                        <template v-slot:append>
                                                            <b-input-group-text>
-                                                               <router-link tag="a" to="/taxes/list"><strong class="text-primary"><i class="fa fa-plus"></i></strong>
+                                                               <router-link tag="a" to=""><strong class="text-primary"><i class="fa fa-plus"></i></strong>
                                                                </router-link>
                                                            </b-input-group-text>
                                                        </template>
@@ -778,7 +470,7 @@
                                                    <b-input-group>
                                                        <template v-slot:append>
                                                            <b-input-group-text>
-                                                               <router-link tag="a" to="/origin/create"><strong class="text-primary"><i class="fa fa-plus"></i></strong>
+                                                               <router-link tag="a" to=""><strong class="text-primary"><i class="fa fa-plus"></i></strong>
                                                                </router-link>
                                                            </b-input-group-text>
                                                        </template>
@@ -798,7 +490,7 @@
                                                    <b-input-group>
                                                        <template v-slot:append>
                                                            <b-input-group-text>
-                                                               <router-link tag="a" to="/supplier/create"><strong class="text-primary"><i class="fa fa-plus"></i></strong>
+                                                               <router-link tag="a" to=""><strong class="text-primary"><i class="fa fa-plus"></i></strong>
                                                                </router-link>
                                                            </b-input-group-text>
                                                        </template>
@@ -817,11 +509,11 @@
                                                    <b-input-group>
                                                        <template v-slot:append>
                                                            <b-input-group-text>
-                                                               <router-link tag="a" to="/unit/list"><strong class="text-primary"><i class="fa fa-plus"></i></strong>
+                                                               <router-link tag="a" to=""><strong class="text-primary"><i class="fa fa-plus"></i></strong>
                                                                </router-link>
                                                            </b-input-group-text>
                                                        </template>
-                                                       <select class="custom-select" v-model="unitSelect">
+                                                       <select class="custom-select" v-model="unitSelect" @change="unitChange">
                                                            <option v-for="unitItem in unitsGridData" :key="unitItem.id"
                                                                    v-bind:value="unitItem.id">{{unitItem.name}}
                                                            </option>
@@ -838,12 +530,14 @@
 
                        <div class="row">
                             <div class="col-md-12">
+
                                 <label>Thành phần
-                                    <b-button variant="primary" v-on:click="openModalTrash('ingredients')">Thêm</b-button>
+                                    <b-button variant="primary">Thêm</b-button>
                                 </label>
                                 <b-form-group>
-                                    <b-form-tags v-model="value" no-outer-focus class="mb-2">
-                                        <template v-slot="{ tags, disabled, addTag, removeTag }">
+                                    <!-- prop `add-on-change` is needed to enable adding tags vie the `change` event -->
+                                    <b-form-tags v-model="value" size="lg" add-on-change no-outer-focus class="mb-2">
+                                        <template v-slot="{ tags, inputAttrs, inputHandlers, disabled, removeTag }">
                                             <ul v-if="tags.length > 0" class="list-inline d-inline-block mb-2">
                                                 <li v-for="tag in tags" :key="tag" class="list-inline-item">
                                                     <b-form-tag
@@ -851,42 +545,19 @@
                                                             :title="tag"
                                                             :disabled="disabled"
                                                             variant="info"
-                                                    >{{ tag }}
-                                                    </b-form-tag>
+                                                    >{{ tag }}</b-form-tag>
                                                 </li>
                                             </ul>
-
-                                            <b-dropdown size="lg" variant="outline-primary" block menu-class="w-100">
-                                                <b-dropdown-form @submit.stop.prevent="() => {}">
-                                                    <b-form-group
-                                                            label-for="tag-search-input"
-                                                            label="Tìm kiếm"
-                                                            label-cols-md="auto"
-                                                            class="mb-0"
-                                                            label-size="lg"
-                                                            :description="searchDesc"
-                                                            :disabled="disabled"
-                                                    >
-                                                        <b-form-input
-                                                                v-model="search"
-                                                                id="tag-search-input"
-                                                                type="search"
-                                                                autocomplete="off"
-                                                        ></b-form-input>
-                                                    </b-form-group>
-                                                </b-dropdown-form>
-                                                <b-dropdown-divider></b-dropdown-divider>
-                                                <b-dropdown-item-button
-                                                        v-for="option in availableOptions"
-                                                        :key="option"
-                                                        @click="onOptionClick({ option, addTag })"
-                                                >
-                                                    {{ option }}
-                                                </b-dropdown-item-button>
-                                                <b-dropdown-text v-if="availableOptions.length === 0">
-                                                    There are no tags available to select
-                                                </b-dropdown-text>
-                                            </b-dropdown>
+                                            <b-form-select
+                                                    v-bind="inputAttrs"
+                                                    v-on="inputHandlers"
+                                                    :disabled="disabled || availableOptions.length === 0"
+                                                    :options="availableOptions">
+                                                <template v-slot:first>
+                                                    <!-- This is required to prevent bugs with Safari -->
+                                                    <option disabled value="">Chọn thành phần</option>
+                                                </template>
+                                            </b-form-select>
                                         </template>
                                     </b-form-tags>
                                 </b-form-group>
@@ -894,7 +565,7 @@
                         </div>
                         <div class="row ">
                             <div class="col">
-                                <button :disabled='!nameState || !janCodeState || !priceState' class="btn btn-primary mr-1"
+                                <button :disabled='!nameState || !janCodeState' class="btn btn-primary mr-1"
                                         @click="saveProduct()">Lưu
                                 </button>
                                 <button class="btn btn-secondary" @click="newProduct">Thêm mới</button>
@@ -904,7 +575,6 @@
                 </div>
             </div>
         </div>
-
 
         <div class="row" v-if="supplierObject.name">
             <div class="col-md-5">
@@ -955,107 +625,7 @@
             </div>
         </div>
 
-        <b-modal
-                ref="modal-sm-trash"
-                size="lg"
-                :title="titleModal"
-                title-class="font-18"
-                hide-footer
-        >
-            <div>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th scope="col">STT</th>
-                        <th scope="col">ID</th>
-                        <th scope="col">Tên</th>
-                        <th scope="col" v-if="checkTax">Phần trăm</th>
-                        <th scope="col" v-if="checkIngredients">Đường</th>
-                        <th scope="col" class="text-center">Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <th scope="row">0</th>
-                        <td v-if="!checkTax">
-                            <b-form-input
-                                    v-model="IdModal"
-                                    :state="IdState"
-                                    trim
-                                    :readonly="checkUpdate"
-                                    :style="[checkUpdate ? {'background' : 'darkgrey'} : {'background' : '#fff'}]"
-                            ></b-form-input>
-                        </td>
-                        <td v-if="checkTax">
-                            <b-form-input
-                                    v-model="IdModal"
-                                    :state="IdState"
-                                    type="number"
-                                    trim
-                                    :style="[checkUpdate ? {'background' : 'darkgrey'} : {'background' : '#fff'}]"
-                                    :readonly="checkUpdate"
-                            ></b-form-input>
-                        </td>
-                        <td>
-                            <b-form-input
-                                    v-model="nameModal"
-                                    :state="nameModalStatue"
-                                    trim
-                            ></b-form-input>
-                        </td>
-                        <td v-if="checkTax">
-                            <b-form-input
-                                    v-model="percent"
-                                    :state="percentState"
-                                    type="number"
-                                    trim
-                            ></b-form-input>
-                        </td>
-                        <td v-if="checkIngredients">
-                            <select class="custom-select" v-model="shipment_method">
-                                <option value=""></option>
-                                <option value="sea">Đường biển</option>
-                                <option value="air">Đường bay</option>
-                            </select>
-                        </td>
-                        <td class="text-center" :style="[checkUpdate ? {'width' : '17%'} : {'width' : ''}]">
-                            <button class="btn btn-primary mr-1" :disabled="!IdState || !nameModalStatue || !percentState"
-                                    @click="saveModal()">Lưu
-                            </button>
-                            <button class="btn btn-danger" v-if="checkUpdate" @click="cancelUpdateModal()">Hủy</button>
-                        </td>
-                    </tr>
-                    <tr v-for="(item,index) in dataGridModal" :key="item.id">
-                        <th scope="row">{{index + 1}}</th>
-                        <td>{{item.id}}</td>
-                        <td v-if="!checkIngredients">{{item.name}}</td>
-                        <td v-if="checkIngredients && item.name.vi">{{item.name.vi}}</td>
-                        <td v-else-if="checkIngredients && item.name.ja">{{item.name.ja}}</td>
-                        <td v-else-if="checkIngredients && item.name.en">{{item.name.en}}</td>
-                        <td v-if="checkTax">{{item.percent}}</td>
-                        <td v-if="checkIngredients">
-                            <span v-if="item.shipment_method_id=='sea'"><span
-                                    class="badge badge-info">Đường biển</span></span>
-                            <span v-if="item.shipment_method_id=='air'"><span
-                                    class="badge badge-primary">Đường bay</span></span>
-                        </td>
-                        <td class="text-center">
-                            <a v-b-tooltip.hover title="DELETE" class="trash-list mr-1" @click="deleteModal(item.id)">
-                                <i class="bx bx bx-trash-alt"></i>
-                            </a>
-                            <a v-b-tooltip.hover title="EDIT" href="javascript:;" @click="editModal(item)"><i
-                                    class="fas fa-pencil-alt text-success"></i></a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="d-flex justify-content-center mt-3">
-                <!--                <b-button class="btn-success mr-3" style="color: black !important;" @click="configDelete(object.id)">Đồng ý</b-button>-->
-                <!--                <b-button class="btn-danger" style="color: black !important;" @click="hideModal">Hủy</b-button>-->
-            </div>
 
-        </b-modal>
 
     </Layout>
 

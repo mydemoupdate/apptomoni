@@ -1,5 +1,5 @@
 <script>
-    import Layout from "../../layouts/main";
+    import Layout from "../layout/main";
     import PageHeader from "@/components/page-header";
     import Pagination from "@/components/Pagination";
     import appConfig from "@/app.config";
@@ -63,10 +63,10 @@
             },
             configDelete(id){
                 productRepository.delete(id).then(()=>{
-                        this.hideModal();
-                        this.showToast('success','Xóa thành công');
-                        this.getList();
-                    });
+                    this.hideModal();
+                    this.showToast('success','Xóa thành công');
+                    this.getList();
+                });
             },
             searchKey(){
                 this.getList(this.selectSearch, this.filter?this.filter:'', this.paginations.currentPage);
@@ -117,7 +117,7 @@
                             <table class="table mb-0">
                                 <thead>
                                 <tr>
-<!--                                    <th>#</th>-->
+                                    <!--                                    <th>#</th>-->
                                     <th>Jancode</th>
                                     <th>Tên sản phẩm</th>
                                     <th>Giá</th>
@@ -130,9 +130,9 @@
                                 </thead>
                                 <tbody>
                                 <tr v-for="(item) in productGridData" :key="item.id">
-<!--                                    <td>-->
-<!--                                        {{index + 1}}-->
-<!--                                    </td>-->
+                                    <!--                                    <td>-->
+                                    <!--                                        {{index + 1}}-->
+                                    <!--                                    </td>-->
                                     <td>{{item.id}}</td>
                                     <td v-if="item.name.ja">{{item.name.ja}}</td>
                                     <td v-else-if="item.name.vi">{{item.name.vi}}</td>

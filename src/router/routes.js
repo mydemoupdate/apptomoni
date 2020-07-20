@@ -17,6 +17,33 @@ export default [
     },
     component: () => import('./views/home'),
   },
+
+
+  {
+    path: '/product/list',
+    name: 'Product List',
+    meta: {
+      authRequired: true,
+    },
+    component: () => import('../app/admin/product/product-list'),
+  },
+  {
+    path: '/product/detail/:id',
+    name: 'Product Detail',
+    meta: {
+      authRequired: true,
+    },
+    component: () => import('../app/admin/product/product-detail'),
+  },
+  {
+    path: '/product/create',
+    name: 'Product Detail',
+    meta: {
+      authRequired: true,
+    },
+    component: () => import('../app/admin/product/product-detail'),
+  },
+
   {
     path: '/login',
     name: 'login',
@@ -59,78 +86,54 @@ export default [
     },
     component: () => import('./views/account/verify-email'),
   },
-  {
-    path: '/product/list',
-    name: 'Product List',
-    meta: {
-      authRequired: true,
-    },
-    component: () => import('./views/product/product-list'),
-  },
-  {
-    path: '/product/detail/:id',
-    name: 'Product Detail',
-    meta: {
-      authRequired: true,
-    },
-    component: () => import('./views/product/product-detail'),
-  },
-  {
-    path: '/product/create',
-    name: 'Product Detail',
-    meta: {
-      authRequired: true,
-    },
-    component: () => import('./views/product/product-detail'),
-  },
-  {
-    path: '/taxes/list',
-    name: 'taxes list',
-    meta: {
-      authRequired: true,
-    },
-    component: () => import('./views/product/taxes-list'),
-  },
-  {
-    path: '/origin/list',
-    name: 'origin list',
-    meta: {
-      authRequired: true,
-    },
-    component: () => import('./views/product/origin-list'),
-  },
-  {
-    path: '/unit/list',
-    name: 'Unit list',
-    meta: {
-      authRequired: true,
-    },
-    component: () => import('./views/product/unit-list'),
-  },
-  {
-    path: '/supplier/list',
-    name: 'supplier list',
-    meta: {
-      authRequired: true,
-    },
-    component: () => import('./views/supplier/supplier-list'),
-  },
-  {
-    path: '/supplier/create',
-    name: 'supplier Detail',
-    meta: {
-      authRequired: true,
-    },
-    component: () => import('./views/supplier/supplier-detail'),
-  },
-  {
-    path: '/supplier/detail/:id',
-    name: 'supplier Detail',
-    meta: {
-      authRequired: true,
-    },
-    component: () => import('./views/supplier/supplier-detail'),
-  },
+  // {
+  //   path: '/taxes/list',
+  //   name: 'taxes list',
+  //   meta: {
+  //     authRequired: true,
+  //   },
+  //   component: () => import('./product/taxes-list'),
+  // },
+  // {
+  //   path: '/origin/list',
+  //   name: 'origin list',
+  //   meta: {
+  //     authRequired: true,
+  //   },
+  //   component: () => import('./product/origin-list'),
+  // },
+  // {
+  //   path: '/unit/list',
+  //   name: 'Unit list',
+  //   meta: {
+  //     authRequired: true,
+  //   },
+  //   component: () => import('./product/unit-list'),
+  // },
+  // {
+  //   path: '/supplier/list',
+  //   name: 'supplier list',
+  //   meta: {
+  //     authRequired: true,
+  //   },
+  //   component: () => import('./views/supplier/supplier-list'),
+  // },
+  // {
+  //   path: '/supplier/create',
+  //   name: 'supplier Detail',
+  //   meta: {
+  //     authRequired: true,
+  //   },
+  //   component: () => import('./views/supplier/supplier-detail'),
+  // },
+  // {
+  //   path: '/supplier/detail/:id',
+  //   name: 'supplier Detail',
+  //   meta: {
+  //     authRequired: true,
+  //   },
+  //   component: () => import('./views/supplier/supplier-detail'),
+  // },
   {
     path: '/order/retail',
     name: 'Order list',
